@@ -22,8 +22,8 @@ fastify.register(fastifyStatic, {
 })
 
 fastify.post("/api/v", async (req, rep) => {
-		if (req.headers.API_KEY != process.env.API_KEY) {
-				console.warn(`Invalid API KEY: ${req.headers.API_KEY}`);
+		if (req.headers.api_key != process.env.API_KEY) {
+				console.warn(`Invalid API KEY: ${req.headers.api_key}`);
 				return rep.send({ok: false})
 		}
 		let videoUrl = req.body.videoUrl;
