@@ -13,6 +13,8 @@ RUN npm install
 
 COPY  . .
 
+ENV API_KEY=$API_KEY
+
 EXPOSE 3000
 
 

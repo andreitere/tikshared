@@ -22,6 +22,10 @@ fastify.register(fastifyStatic, {
 })
 
 fastify.post("/api/v", async (req, rep) => {
+		if (req.headers.API_KEY != process.env.API_KEY) {
+				console.warn(`Invalid API KEY: ${req.headers.API_KEY}`);
+				return rep.send({ok: false})
+		}
 		let videoUrl = req.body.videoUrl;
 		let [name, err] = await saveTiktok(videoUrl);
 		if (err) {

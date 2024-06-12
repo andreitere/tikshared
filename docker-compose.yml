@@ -4,9 +4,11 @@ services:
     image: ghcr.io/andreitere/tikshared:${VERSION:-latest}
     container_name: tikshared
     volumes:
-      - "tdownloads:/downloads"
+      - "tdownloads:/app/downloads"
     ports:
       - "3333:3000"
+    environment:
+      - API_KEY=${API_KEY}
     networks:
       - public_bridge
     deploy:
@@ -16,7 +18,7 @@ services:
     restart: "unless-stopped"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tikshared.rule=Host(`shared.cloudcrafts.club`)"
+      - "traefik.http.routers.tikshared.rule=Host(`${TRAEFIK_HOST}`)"
       - "traefik.http.services.tikshared.loadbalancer.server.port=3000"
       - "traefik.http.routers.tikshared.middlewares=traefik-https-redirect"
       - "traefik.http.routers.tikshared.tls=true"
