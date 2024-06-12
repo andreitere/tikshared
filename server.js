@@ -33,7 +33,7 @@ fastify.post("/api/v", async (req, rep) => {
 
 
 const port = process.env.PORT || 3000;
-fastify.listen({port}, (err, address) => {
+fastify.listen({host: "0.0.0.0", port}, (err, address) => {
 		if (err) {
 				console.error(err);
 				process.exit(1);
