@@ -17,7 +17,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tikshared.rule=Host(`shared.cloudcrafts.club`)"
-      - "traefik.http.services.tikshared.loadbalancer.server.port=3333"
+      - "traefik.http.services.tikshared.loadbalancer.server.port=3000"
       - "traefik.http.routers.tikshared.middlewares=traefik-https-redirect"
       - "traefik.http.routers.tikshared.tls=true"
       - "traefik.http.routers.tikshared.tls.certresolver=cloudflare"
