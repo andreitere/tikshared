@@ -5,6 +5,8 @@ services:
     container_name: tikshared
     volumes:
       - "tdownloads:/downloads"
+    ports:
+      - "3000:3000"
     networks:
       - public_bridge
     deploy:
