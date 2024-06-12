@@ -6,7 +6,7 @@ services:
     volumes:
       - "tdownloads:/downloads"
     ports:
-      - "3000:3000"
+      - "3333:3000"
     networks:
       - public_bridge
     deploy:
@@ -16,7 +16,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tikshared.rule=Host(`tikshared.cloudcrafts.club`)"
-      - "traefik.http.services.tikshared.loadbalancer.server.port=3000"
+      - "traefik.http.services.tikshared.loadbalancer.server.port=3333"
       - "traefik.http.routers.tikshared.middlewares=traefik-https-redirect"
       - "traefik.http.routers.tikshared.tls=true"
       - "traefik.http.routers.tikshared.tls.certresolver=cloudflare"
