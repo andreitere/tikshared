@@ -5,11 +5,25 @@ services:
     container_name: tikshared
     volumes:
       - "tdownloads:/downloads"
-    environment:
+    networks:
+      - public_bridge
     deploy:
       resources:
         limits:
           memory: "1g"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tikshared.rule=Host(`tikshared.cloudcrafts.club`)"
+      - "traefik.http.services.tikshared.loadbalancer.server.port=3000"
+      - "traefik.http.routers.tikshared.middlewares=traefik-https-redirect"
+      - "traefik.http.routers.tikshared.tls=true"
+      - "traefik.http.routers.tikshared.tls.certresolver=cloudflare"
+      - "com.centurylinklabs.watchtower.enable=false"
 volumes:
   tdownloads:
+    external: true
+
+networks:
+  public_bridge:
+    name: public_bridge
     external: true
