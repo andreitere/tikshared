@@ -3,7 +3,7 @@ import * as https from "https";
 import * as fs from "fs";
 import axios from "axios";
 
-const TikTokScraper = new TTScraper("./cookies.txt");
+const TikTokScraper = new TTScraper();
 
 export const saveTiktok = async (videoUrl) => {
 		try {
