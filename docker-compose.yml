@@ -16,7 +16,7 @@ services:
     restart: "unless-stopped"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tikshared.rule=Host(`t.cloudcrafts.club`)"
+      - "traefik.http.routers.tikshared.rule=Host(`shared.cloudcrafts.club`)"
       - "traefik.http.services.tikshared.loadbalancer.server.port=3333"
       - "traefik.http.routers.tikshared.middlewares=traefik-https-redirect"
       - "traefik.http.routers.tikshared.tls=true"
