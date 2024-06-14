@@ -9,6 +9,10 @@ services:
       - "3333:3000"
     environment:
       - API_KEY=${API_KEY}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
     networks:
       - public_bridge
     deploy:
