@@ -1,9 +1,14 @@
 import Fastify from "fastify";
+import "dotenv/config"
+
+
 import fastifyCors from "@fastify/cors";
 import {saveTiktok} from "./controller.js";
 import fastifyStatic from "@fastify/static";
 import path from "path"
 import {fileURLToPath} from "url"
+import {getAuth} from "./db.js";
+
 
 // Get the current directory name
 const __filename = fileURLToPath(import.meta.url);
@@ -22,17 +27,21 @@ fastify.register(fastifyStatic, {
 })
 
 fastify.post("/api/v", async (req, rep) => {
-		if (req.headers.api_key != process.env.API_KEY) {
-				console.warn(`Invalid API KEY: ${req.headers.api_key}`);
-				return rep.send({ok: false})
+		try {
+				let api_key = req.headers.api_key || req.query.api_key;
+				if (!api_key) {
+						return rep.send({ok: false, message: 'no api key found.'});
+				}
+				let db_api_key = await getAuth(api_key)
+				let videoUrl = req.body.videoUrl;
+				let name = await saveTiktok(videoUrl, db_api_key);
+
+				return rep.send({ok: true, url: name})
+		} catch (e) {
+				console.error(e)
+				return rep.send({ok: false, message: e.message});
 		}
-		let videoUrl = req.body.videoUrl;
-		let [name, err] = await saveTiktok(videoUrl);
-		if (err) {
-				console.error(err);
-				return rep.send({ok: false})
-		}
-		return rep.send({ok: true, url: name})
+
 })
 
 
