@@ -7,9 +7,12 @@
     <%= video_count %>
     time(s)!
 </div>
-<video controls autoplay style="max-height: 100dvh;">
+<video controls autoplay style="max-height: 100dvh;" id="vid">
     <source src="/<%= videoId %>.mp4">
     type="video/mp4">
 </video>
 </body>
+<script>
+		document.getElementById('vid').play();
+</script>
 </html>

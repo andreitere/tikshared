@@ -11,7 +11,7 @@ const TikTokScraper = new TTScraper();
 export const saveTiktok = async (videoUrl, db_api_key) => {
 		let existing = await getIfSaved(videoUrl);
 		if (existing) {
-				return `${existing}.mp4`;
+				return `${existing}`;
 		}
 		const name = uuidv4()
 		let res = await TikTokScraper.noWaterMark(videoUrl)
@@ -36,6 +36,6 @@ export const saveTiktok = async (videoUrl, db_api_key) => {
 				})
 		})
 		await saveVideo(db_api_key.id, videoUrl, name)
-		return `${name}.mp4`
+		return `${name}`
 }
 
