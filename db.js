@@ -32,3 +32,15 @@ export const getIfSaved = async (url) => {
 		}
 		return false;
 }
+
+export const addVideoView = async (name) => {
+		await db.query(`insert into tikshared.views (name) values ($1)`, [name])
+}
+
+export const getVideoCount = async (name) => {
+		let {rows} = await db.query(`select count(*) as count from tikshared.views where name = $1`, [name])
+		if (rows.length) {
+				return rows[0].count
+		}
+		return 0;
+}

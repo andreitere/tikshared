@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head></head>
+<body style="display: flex; align-items: center; width: 100vw; justify-content: center; flex-direction: column;">
+<div class="border: 1px solid gray; border-radius: 5px; padding:5px;">
+    Viewed
+    <%= video_count %>
+    time(s)!
+</div>
+<video controls autoplay style="max-height: 100dvh;">
+    <source src="/<%= videoId %>.mp4">
+    type="video/mp4">
+</video>
+</body>
+</html>
