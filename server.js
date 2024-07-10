@@ -56,6 +56,7 @@ fastify.post("/api/v", async (req, rep) => {
 		} catch (e) {
 				console.error(e)
 				return rep.send({ok: false, message: e.message});
+		const api_key = req.headers.apikey || req.query.apikey;
 		}
 })
 
