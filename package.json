@@ -24,5 +24,8 @@
     "quick-lru": "^7.0.0",
     "tiktok-scraper-ts": "^1.4.1",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.2"
   }
 }

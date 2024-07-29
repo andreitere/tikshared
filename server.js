@@ -43,23 +43,22 @@ fastify.get("/v/:videoId", async (req, reply) => {
 
 
 fastify.post("/api/v", async (req, rep) => {
-		try {
-				let api_key = req.headers.api_key || req.query.api_key;
-				if (!api_key) {
-						return rep.send({ok: false, message: 'no api key found.'});
-				}
-				let db_api_key = await getAuth(api_key)
-				let videoUrl = req.body.videoUrl;
-				let name = await saveTiktok(videoUrl, db_api_key);
-
-				return rep.send({ok: true, url: name})
-		} catch (e) {
-				console.error(e)
-				return rep.send({ok: false, message: e.message});
-		const api_key = req.headers.apikey || req.query.apikey;
+	try {
+		console.log(req.headers)
+		const api_key = req.headers.apikey || req.headers.auth || req.query.apikey;
+		if (!api_key) {
+			return rep.send({ ok: false, message: "no api key found." });
 		}
-})
+		const db_api_key = await getAuth(api_key);
+		const videoUrl = req.body.videoUrl;
+		const name = await saveTiktok(videoUrl, db_api_key);
 
+		return rep.send({ ok: true, url: name });
+	} catch (e) {
+		console.error(e);
+		return rep.send({ ok: false, message: e.message });
+	}
+});
 
 const port = process.env.PORT || 3000;
 fastify.listen({host: "0.0.0.0", port}, (err, address) => {
