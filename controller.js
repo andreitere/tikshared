@@ -19,9 +19,7 @@ export const saveTiktok = async (videoUrl, db_api_key) => {
 		const file = fs.createWriteStream(dest);
 		await new Promise((resolve, reject) => {
 				axios({
-						method: "get",
-						url: res,
-						responseType: "stream"
+						method: "get", url: res, responseType: "stream"
 				}).then(response => {
 						response.data.pipe(file);
 						file.on("finish", () => {

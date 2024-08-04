@@ -1,8 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta property="og:url" content="https://shared.cloudcrafts.club/<%= videoId %>.mp4" />
-    <meta property="og:video" content="https://shared.cloudcrafts.club/<%= videoId %>.mp4" />
+    <meta property="og:url" content="https://shared.cloudcrafts.club/<%= videoId %>.mp4"/>
+    <meta property="og:video" content="https://shared.cloudcrafts.club/<%= videoId %>.mp4"/>
+    <script>
+				if (navigator.getAutoplayPolicy("mediaelement") === "allowed") {
+						// The video element will autoplay with audio.
+				} else if (navigator.getAutoplayPolicy("mediaelement") === "allowed-muted") {
+						// Mute audio on video
+						document.getElementById("vid").muted = true;
+				} else if (navigator.getAutoplayPolicy("mediaelement") === "disallowed") {
+
+				}
+    </script>
 </head>
 <body style="display: flex; align-items: center; width: 100vw; justify-content: center; flex-direction: column;">
 <div class="border: 1px solid gray; border-radius: 5px; padding:5px;">
@@ -10,12 +20,11 @@
     <%= video_count %>
     time(s)!
 </div>
-<video controls autoplay style="max-height: 100dvh;" id="vid">
-    <source src="/<%= videoId %>.mp4">
-    type="video/mp4">
+<video controls playsinline preload="auto" autoplay src="/<%= videoId %>.mp4" style="max-height: 100dvh;" id="vid">
+
 </video>
 </body>
 <script>
-		document.getElementById('vid').play();
+
 </script>
 </html>
