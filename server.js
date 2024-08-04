@@ -49,6 +49,7 @@ fastify.post("/api/v", async (req, rep) => {
 		}
 		const db_api_key = await getAuth(api_key);
 		const videoUrl = req.body.videoUrl;
+		console.log(`Processing request: ${videoUrl}`)
 		const name = await saveTiktok(videoUrl, db_api_key);
 
 		return rep.send({ ok: true, url: name });
