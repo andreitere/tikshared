@@ -21,17 +21,14 @@ services:
           memory: "1g"
     restart: "unless-stopped"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.tikshared.rule=Host(`${TRAEFIK_HOST}`)"
-      - "traefik.http.services.tikshared.loadbalancer.server.port=3000"
-      - "traefik.http.routers.tikshared.middlewares=traefik-https-redirect"
-      - "traefik.http.routers.tikshared.tls=true"
-      - "traefik.http.routers.tikshared.tls.certresolver=cloudflare"
       - "com.centurylinklabs.watchtower.enable=false"
 
 volumes:
   tdownloads:
-    external: true
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/external/tshared
+
 
 networks:
   public_bridge:
