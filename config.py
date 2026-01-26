@@ -7,6 +7,7 @@ DOWNLOAD_DIR.mkdir(exist_ok=True)
 EXPIRY_HOURS = 4
 PORT = int(os.environ.get("PORT", 8008))
 BASE_URL = os.environ.get("BASE_URL", f"http://localhost:{PORT}")
+API_KEY = os.environ.get("API_KEY", "tere")
 
 # Quality presets: name -> yt-dlp format string
 QUALITY_PRESETS = {

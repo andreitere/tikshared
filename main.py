@@ -2,8 +2,8 @@ import uuid
 import time
 from urllib.parse import urlparse, urlunparse
 
-from fastapi import FastAPI, Form, HTTPException
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi import FastAPI, Form, HTTPException, Cookie
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 import yt_dlp
 
@@ -14,6 +14,7 @@ from config import (
     PORT,
     QUALITY_PRESETS,
     DEFAULT_QUALITY,
+    API_KEY,
 )
 
 app = FastAPI()
@@ -124,7 +125,7 @@ async def index():
                 font-size: 14px;
             }}
             
-            input[type="text"], select {{
+            input[type="text"], input[type="password"], select {{
                 width: 100%;
                 padding: 12px 16px;
                 margin-bottom: 20px;
@@ -135,11 +136,70 @@ async def index():
                 background: #f8f9fa;
             }}
             
-            input[type="text"]:focus, select:focus {{
+            input[type="text"]:focus, input[type="password"]:focus, select:focus {{
                 outline: none;
                 border-color: #667eea;
                 background: white;
                 box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }}
+            
+            #authSection {{
+                background: linear-gradient(135deg, #fff5f5 0%, #ffe9e9 100%);
+                padding: 25px 25px 20px 25px;
+                border-radius: 12px;
+                margin-bottom: 30px;
+                border: 2px solid #fecaca;
+                animation: slideDown 0.3s ease-out;
+            }}
+            
+            @keyframes slideDown {{
+                from {{
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }}
+                to {{
+                    opacity: 1;
+                    transform: translateY(0);
+                }}
+            }}
+            
+            #authSection label {{
+                color: #991b1b;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 12px;
+            }}
+            
+            #authSection label::before {{
+                content: "🔐";
+                font-size: 18px;
+            }}
+            
+            #authSection input {{
+                background: white;
+                border: 2px solid #fca5a5;
+                margin-bottom: 10px;
+                padding: 14px 16px;
+            }}
+            
+            #authSection input:focus {{
+                border-color: #dc2626;
+                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            }}
+            
+            .auth-note {{
+                font-size: 12px;
+                color: #991b1b;
+                margin-top: 0;
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }}
+            
+            .auth-note::before {{
+                content: "ℹ️";
             }}
             
             button {{
@@ -338,6 +398,12 @@ async def index():
                 <p class="subtitle">Download TikTok videos quickly and easily</p>
                 
                 <form id="form">
+                    <div id="authSection" style="display: none;">
+                        <label>API Key Required</label>
+                        <input type="password" id="apiKey" placeholder="Enter your API key to continue" required>
+                        <p class="auth-note">Your API key will be stored securely in your browser</p>
+                    </div>
+                    
                     <label>TikTok URL</label>
                     <input type="text" name="url" placeholder="https://www.tiktok.com/@username/video/..." required>
                     
@@ -349,6 +415,24 @@ async def index():
         </div>
         
         <script>
+            // Check if API key is in cookies
+            function getCookie(name) {{
+                const value = `; ${{document.cookie}}`;
+                const parts = value.split(`; ${{name}}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+                return null;
+            }}
+            
+            function setCookie(name, value, days) {{
+                const expires = new Date(Date.now() + days * 864e5).toUTCString();
+                document.cookie = `${{name}}=${{value}}; expires=${{expires}}; path=/; SameSite=Strict`;
+            }}
+            
+            // Show auth section if no API key in cookies
+            if (!getCookie('api_key')) {{
+                document.getElementById('authSection').style.display = 'block';
+            }}
+            
             async function copyToClipboard(text, btn) {{
                 try {{
                     await navigator.clipboard.writeText(text);
@@ -370,6 +454,12 @@ async def index():
                 const result = document.getElementById('result');
                 const submitBtn = document.getElementById('submitBtn');
                 
+                // Store API key in cookie if provided
+                const apiKeyInput = document.getElementById('apiKey');
+                if (apiKeyInput && apiKeyInput.value) {{
+                    setCookie('api_key', apiKeyInput.value, 365);
+                }}
+                
                 submitBtn.disabled = true;
                 result.innerHTML = '<div class="loading">⏳ Downloading your video...</div>';
                 
@@ -381,6 +471,11 @@ async def index():
                     
                     if (data.error) {{
                         result.innerHTML = `<div class="error">❌ ${{data.error}}</div>`;
+                        // If auth error, show auth section again
+                        if (data.error.includes('Unauthorized') || data.error.includes('Invalid API key')) {{
+                            document.cookie = 'api_key=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                            document.getElementById('authSection').style.display = 'block';
+                        }}
                     }} else {{
                         result.innerHTML = `
                             <div class="result">
@@ -419,7 +514,14 @@ async def index():
 
 
 @app.post("/download")
-async def download(url: str = Form(...)):
+async def download(url: str = Form(...), api_key: str = Cookie(None)):
+    # Check API key if configured
+    if API_KEY and api_key != API_KEY:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Unauthorized: Invalid API key"}
+        )
+    
     clean_url = sanitize_url(url.strip())
     video_id = str(uuid.uuid4())
     output_path = DOWNLOAD_DIR / f"{video_id}.mp4"
