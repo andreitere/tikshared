@@ -22,13 +22,12 @@ video_store: dict[str, dict] = {}
 
 
 def sanitize_url(raw_url: str) -> str:
-    """Strip query/fragment tracking params while keeping base video URL."""
+    """Strip fragment while keeping query params (some URLs need them)."""
     parsed = urlparse(raw_url)
     if parsed.scheme and parsed.netloc:
-        cleaned = parsed._replace(query="", fragment="")
+        cleaned = parsed._replace(fragment="")
         return urlunparse(cleaned)
-    # Fallback for partial URLs
-    return raw_url.split("?")[0].split("#")[0]
+    return raw_url.split("#")[0]
 
 
 def cleanup_expired():
@@ -400,7 +399,7 @@ async def index():
                 <form id="form">
                     <div id="authSection" style="display: none;">
                         <label>API Key Required</label>
-                        <input type="password" id="apiKey" placeholder="Enter your API key to continue" required>
+                        <input type="password" id="apiKey" placeholder="Enter your API key to continue">
                         <p class="auth-note">Your API key will be stored securely in your browser</p>
                     </div>
                     
