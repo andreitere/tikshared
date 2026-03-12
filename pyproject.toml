@@ -1,7 +1,7 @@
 [project]
 name = "tikshared-v2"
 version = "0.1.0"
-description = "Add your description here"
+description = "Download and share TikTok videos quickly"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -11,4 +11,5 @@ dependencies = [
     "python-multipart>=0.0.22",
     "uvicorn[standard]>=0.40.0",
     "yt-dlp>=2025.12.8",
+    "nanoid>=2.0.0",
 ]

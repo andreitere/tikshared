@@ -1,10 +1,11 @@
-import uuid
 import time
 from urllib.parse import urlparse, urlunparse
 
 from fastapi import FastAPI, Form, HTTPException, Cookie
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from apscheduler.schedulers.background import BackgroundScheduler
+from nanoid import generate
 import yt_dlp
 
 from config import (
@@ -18,6 +19,8 @@ from config import (
 )
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 video_store: dict[str, dict] = {}
 
 
@@ -69,8 +72,16 @@ async def index():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>TikTok Downloader</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TikShared</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <meta name="theme-color" content="#667eea">
+        <meta name="description" content="Download and share TikTok videos quickly">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="TikShared">
+        <link rel="manifest" href="/static/manifest.json">
+        <link rel="icon" type="image/svg+xml" href="/static/icons/icon.svg">
+        <link rel="apple-touch-icon" href="/static/icons/icon.svg">
         <style>
             * {{
                 margin: 0;
@@ -393,8 +404,8 @@ async def index():
     <body>
         <div class="wrapper">
             <div class="container">
-                <h1>🎵 TikTok Downloader</h1>
-                <p class="subtitle">Download TikTok videos quickly and easily</p>
+                <h1>🎵 TikShared</h1>
+                <p class="subtitle">Download and share TikTok videos quickly</p>
                 
                 <form id="form">
                     <div id="authSection" style="display: none;">
@@ -448,6 +459,11 @@ async def index():
                 }}
             }}
             
+            // Register service worker for PWA
+            if ('serviceWorker' in navigator) {{
+                navigator.serviceWorker.register('/static/sw.js').catch(() => {{}});
+            }}
+
             document.getElementById('form').onsubmit = async (e) => {{
                 e.preventDefault();
                 const result = document.getElementById('result');
@@ -522,7 +538,7 @@ async def download(url: str = Form(...), api_key: str = Cookie(None)):
         )
     
     clean_url = sanitize_url(url.strip())
-    video_id = str(uuid.uuid4())
+    video_id = generate(size=12)
     output_path = DOWNLOAD_DIR / f"{video_id}.mp4"
 
     ydl_opts = {
